@@ -38,7 +38,7 @@ class ShuffleChannelOpConverter : public OpConverter {
     auto* input = engine_->GetITensor(op_desc.Input("X")[0]);
     auto input_dims = input->getDimensions();
     auto output_name = op_desc.Output("Out")[0];
-    int group = PADDLE_GET_CONST(int, op_desc.GetAttr("group"));
+    int group = BOOST_GET_CONST(int, op_desc.GetAttr("group"));
 
 #if IS_TRT_VERSION_GE(8000)
     if (engine_->with_dynamic_shape()) {
