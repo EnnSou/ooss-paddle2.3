@@ -46,7 +46,7 @@ bool CUDAStream::Init(const Place& place, const Priority& priority,
         &stream_, static_cast<unsigned int>(flag), 0));
 #endif
   }
-  callback_manager_.reset(new StreamCallbackManager<gpuStream_t>(stream_));
+  // callback_manager_.reset(new StreamCallbackManager<gpuStream_t>(stream_));
   VLOG(3) << "GPUStream Init stream: " << stream_
           << ", priority: " << static_cast<int>(priority)
           << ", flag:" << static_cast<int>(flag);
@@ -56,7 +56,7 @@ bool CUDAStream::Init(const Place& place, const Priority& priority,
 void CUDAStream::Destroy() {
   CUDADeviceGuard guard(place_.device);
   Wait();
-  WaitCallback();
+  // WaitCallback();
   if (stream_ && owned_stream_) {
 #ifdef PADDLE_WITH_HIP
     PADDLE_ENFORCE_GPU_SUCCESS(hipStreamDestroy(stream_));
@@ -104,7 +104,7 @@ void CUDAStream::SetStream(gpuStream_t stream) {
   }
   owned_stream_ = false;
   stream_ = stream;
-  callback_manager_.reset(new StreamCallbackManager<gpuStream_t>(stream_));
+  // callback_manager_.reset(new StreamCallbackManager<gpuStream_t>(stream_));
 }
 
 CUDAStream* get_current_stream(int deviceId) {

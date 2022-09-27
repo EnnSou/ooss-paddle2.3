@@ -612,21 +612,22 @@ namespace internal {
 #endif
 #endif
 {
-  auto const func = reinterpret_cast<std::function<void()>*>(user_data);
+  auto const* func = reinterpret_cast<std::function<void()>*>(user_data);
   (*func)();
+  delete func;
 }
 }
 
 void CUDADeviceContext::AddStreamCallback(
     const std::function<void()>& callback) const {
   if (thread_ctx_.count(this)) {
-    auto const stream = context()->Stream()->RawStream();
+    auto* func = new std::function<void()>(callback);
 #if CUDA_VERSION >= 10000
     PADDLE_ENFORCE_GPU_SUCCESS(
-        cudaLaunchHostFunc(stream, internal::StreamCallbackFunc, &callback));
+        cudaLaunchHostFunc(stream(), internal::StreamCallbackFunc, func));
 #else
     PADDLE_ENFORCE_GPU_SUCCESS(
-        cudaStreamAddCallback(stream, internal::StreamCallbackFunc, &callback, 0));
+        cudaStreamAddCallback(stream(), internal::StreamCallbackFunc, func, 0));
 #endif
     return;
   }
@@ -635,8 +636,7 @@ void CUDADeviceContext::AddStreamCallback(
 
 void CUDADeviceContext::WaitStreamCallback() const {
   if (thread_ctx_.count(this)) {
-    auto const stream = context()->Stream()->RawStream();
-    phi::backends::gpu::GpuStreamSync(stream);
+    phi::backends::gpu::GpuStreamSync(stream());
     return;
   }
   phi::GPUContext::WaitStreamCallback();

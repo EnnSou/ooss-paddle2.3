@@ -64,7 +64,7 @@ set(wrapped_infermeta_header_file ${CMAKE_SOURCE_DIR}/paddle/phi/infermeta/gener
 set(wrapped_infermeta_source_file ${CMAKE_SOURCE_DIR}/paddle/phi/infermeta/generated.cc)
 
 if (NOT PYTHON_EXECUTABLE)
-  find_package(PythonInterp REQUIRED)
+  find_package(PythonInterp REQUIRED 3)
 endif()
 
 # generate forward api
