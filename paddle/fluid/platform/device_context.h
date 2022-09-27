@@ -546,7 +546,7 @@ class CUDADeviceContext : public phi::GPUContext {
 
   /*! \brief  Call cublas function safely. */
   inline void CublasCall(
-      const std::function<void(blasHandle_t)>& callback) const override {
+      const std::function<void(blasHandle_t)>& callback) const {
     if (!thread_ctx_.count(this)) {
       phi::GPUContext::CublasCall(callback);
       return;
@@ -557,7 +557,7 @@ class CUDADeviceContext : public phi::GPUContext {
 #ifndef PADDLE_WITH_HIP
   /*! \brief  Call cusparse function safely. */
   inline void CusparseCall(
-      const std::function<void(phi::sparseHandle_t)>& callback) const override {
+      const std::function<void(phi::sparseHandle_t)>& callback) const {
     if (!thread_ctx_.count(this)) {
       phi::GPUContext::CusparseCall(callback);
       return;
@@ -569,7 +569,7 @@ class CUDADeviceContext : public phi::GPUContext {
   /*! \brief  Call cublas function with Tensor Core safely. If
       Tensor Core is not available, use DEFAULT_MATH instead. */
   inline void TensorCoreCublasCallIfAvailable(
-      const std::function<void(blasHandle_t)>& callback) const override {
+      const std::function<void(blasHandle_t)>& callback) const {
     if (!thread_ctx_.count(this)) {
       phi::GPUContext::TensorCoreCublasCallIfAvailable(callback);
       return;
@@ -586,15 +586,15 @@ class CUDADeviceContext : public phi::GPUContext {
 
 /*! \brief  Return cublas handle in the device context. */
 #ifdef PADDLE_WITH_HIP
-  rocblas_handle cublas_handle() const override;
+  rocblas_handle cublas_handle() const;
 #else
-  cublasHandle_t cublas_handle() const override;
-  // cublasLtHandle_t cublaslt_handle() const override;
-  cusparseHandle_t cusparse_handle() const override;
+  cublasHandle_t cublas_handle() const;
+  // cublasLtHandle_t cublaslt_handle() const;
+  cusparseHandle_t cusparse_handle() const;
 #endif
 
 #ifndef PADDLE_WITH_HIP
-  cusolverDnHandle_t cusolver_dn_handle() const override;
+  cusolverDnHandle_t cusolver_dn_handle() const;
 #endif
 
   /*! \brief  Return a cudnn workspace handle to call multiple cudnn

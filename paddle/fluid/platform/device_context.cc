@@ -602,10 +602,32 @@ void CUDADeviceContext::RecordEvent(
   phi::GPUContext::RecordEvent(ev, callback);
 }
 
+namespace internal {
+#ifdef PADDLE_WITH_CUDA
+#if CUDA_VERSION >= 10000
+    static void CUDART_CB StreamCallbackFunc(void* user_data)
+#else
+    static void CUDART_CB
+    StreamCallbackFunc(cudaStream_t stream, cudaError_t status, void* user_data)
+#endif
+#endif
+{
+  auto const func = reinterpret_cast<std::function<void()>*>(user_data);
+  (*func)();
+}
+}
+
 void CUDADeviceContext::AddStreamCallback(
     const std::function<void()>& callback) const {
   if (thread_ctx_.count(this)) {
-    context()->Stream()->AddCallback(callback);
+    auto const stream = context()->Stream()->RawStream();
+#if CUDA_VERSION >= 10000
+    PADDLE_ENFORCE_GPU_SUCCESS(
+        cudaLaunchHostFunc(stream, internal::StreamCallbackFunc, &callback));
+#else
+    PADDLE_ENFORCE_GPU_SUCCESS(
+        cudaStreamAddCallback(stream, internal::StreamCallbackFunc, &callback, 0));
+#endif
     return;
   }
   phi::GPUContext::AddStreamCallback(callback);
@@ -613,7 +635,8 @@ void CUDADeviceContext::AddStreamCallback(
 
 void CUDADeviceContext::WaitStreamCallback() const {
   if (thread_ctx_.count(this)) {
-    context()->Stream()->WaitCallback();
+    auto const stream = context()->Stream()->RawStream();
+    phi::backends::gpu::GpuStreamSync(stream);
     return;
   }
   phi::GPUContext::WaitStreamCallback();

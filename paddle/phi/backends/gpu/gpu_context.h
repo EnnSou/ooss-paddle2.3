@@ -94,16 +94,16 @@ class PADDLE_API GPUContext : public DeviceContext {
   virtual dnnHandle_t cudnn_handle() const;
 
   /*! \brief  Return cublas handle in the device context. */
-  virtual blasHandle_t cublas_handle() const;
+  blasHandle_t cublas_handle() const;
 
   /*! \brief  Return cublasLt handle in the device context. */
-  virtual blasLtHandle_t cublaslt_handle() const;
+  blasLtHandle_t cublaslt_handle() const;
 
   /*! \brief  Return cusolver handle in the device context. */
-  virtual solverHandle_t cusolver_dn_handle() const;
+  solverHandle_t cusolver_dn_handle() const;
 
   /*! \brief  Return cusparse handle in the device context. */
-  virtual sparseHandle_t cusparse_handle() const;
+  sparseHandle_t cusparse_handle() const;
 
   /*! \brief  Wait for all operations completion in the stream. */
   void Wait() const override;
@@ -143,15 +143,15 @@ class PADDLE_API GPUContext : public DeviceContext {
 
  public:
   /*! \brief  Call cublas function safely. */
-  virtual void CublasCall(const std::function<void(blasHandle_t)>&) const;
+  void CublasCall(const std::function<void(blasHandle_t)>&) const;
 
   /*! \brief  Call cublas function with Tensor Core safely. If
       Tensor Core is not available, use DEFAULT_MATH instead. */
-  virtual void TensorCoreCublasCallIfAvailable(
+  void TensorCoreCublasCallIfAvailable(
       const std::function<void(blasHandle_t)>&) const;
 
   /*! \brief  Call cusparse function safely. */
-  virtual void CusparseCall(const std::function<void(sparseHandle_t)>&) const;
+  void CusparseCall(const std::function<void(sparseHandle_t)>&) const;
 
   virtual void RecordEvent(gpuEvent_t ev, const std::function<void()>& callback) const;
 
