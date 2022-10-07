@@ -396,14 +396,15 @@ struct ConcatFunctor<phi::GPUContext, T> {
     // next time)
     auto* data_alloc_released = data_alloc.release();
     auto* col_alloc_released = col_alloc.release();
-    context.AddStreamCallback([data_alloc_released, col_alloc_released] {
+    // context.AddStreamCallback([data_alloc_released, col_alloc_released] {
+    context.Wait();
       VLOG(4) << "Delete cuda pinned at " << data_alloc_released;
       VLOG(4) << "Delete cuda pinned at " << col_alloc_released;
       paddle::memory::allocation::Allocator::AllocationDeleter(
           data_alloc_released);
       paddle::memory::allocation::Allocator::AllocationDeleter(
           col_alloc_released);
-    });
+    // });
   }
 };
 
@@ -557,12 +558,13 @@ class SplitFunctor<phi::GPUContext, T> {
     // next time)
     auto* data_alloc_released = data_alloc.release();
     auto* cols_alloc_released = cols_alloc.release();
-    context.AddStreamCallback([data_alloc_released, cols_alloc_released] {
+    // context.AddStreamCallback([data_alloc_released, cols_alloc_released] {
+    context.Wait();
       paddle::memory::allocation::Allocator::AllocationDeleter(
           data_alloc_released);
       paddle::memory::allocation::Allocator::AllocationDeleter(
           cols_alloc_released);
-    });
+    // });
   }
 };
 
