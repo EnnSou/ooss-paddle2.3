@@ -190,6 +190,7 @@ struct SimpleOpTypeSetTeller : public Teller {
       "fused_preln_embedding_eltwise_layernorm",
       "preln_skip_layernorm",
       "roll",
+      "multiclass_nms",
       "multiclass_nms3",
       "squeeze2",
       "unsqueeze2"};

@@ -1602,6 +1602,7 @@ bool AnalysisPredictor::SaveTrtCalibToDisk() {
       if (!Singleton<TRTCalibratorEngineManager>::Global().Has(engine_name)) {
         LOG(ERROR) << "You should run the predictor(with trt) on the real data "
                       "to generate calibration info";
+        continue;
         return false;
       }
       TRTCalibratorEngine *calib_engine =
