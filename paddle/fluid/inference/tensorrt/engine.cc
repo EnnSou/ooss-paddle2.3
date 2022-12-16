@@ -277,6 +277,8 @@ void TensorRTEngine::FreezeNetwork() {
       *network(), *infer_builder_config_));
 #else
   infer_builder_config_->setFlag(nvinfer1::BuilderFlag::kSPARSE_WEIGHTS);
+  infer_builder_config_->setFlag(
+      nvinfer1::BuilderFlag::kPREFER_PRECISION_CONSTRAINTS);
   ihost_memory_.reset(infer_builder_->buildSerializedNetwork(
       *network(), *infer_builder_config_));
   infer_ptr<nvinfer1::IRuntime> runtime(createInferRuntime(&logger_));
